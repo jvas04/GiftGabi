@@ -23,8 +23,10 @@
       border-radius: 50% 0 50% 0;
       opacity: 0.15;
       pointer-events: none;
+      z-index: 0;
     }
 
+    /* ── VISTA PRINCIPAL ── */
     .container {
       display: flex;
       flex-direction: column;
@@ -33,6 +35,8 @@
       max-width: 480px;
       width: 100%;
       gap: 1.2rem;
+      position: relative;
+      z-index: 1;
     }
 
     .badge {
@@ -84,6 +88,23 @@
     .btn:active { transform: scale(0.97); }
     .btn:disabled { opacity: 0.6; cursor: default; transform: none; }
 
+    .btn-secondary {
+      background: rgba(255,255,255,0.7);
+      color: #6b3fa0;
+      border: 1.5px solid #b49de0;
+      border-radius: 50px;
+      padding: 11px 28px;
+      font-size: 0.9rem;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-secondary:hover { background: rgba(255,255,255,0.95); transform: translateY(-1px); }
+
     .card {
       background: rgba(255,255,255,0.88);
       border: 1px solid #c4aff0;
@@ -97,11 +118,6 @@
     }
 
     .card.visible { display: flex; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
 
     .card-date {
       font-size: 11px;
@@ -119,6 +135,131 @@
     }
 
     .hearts { color: #8b5cf6; letter-spacing: 5px; font-size: 13px; }
+
+    /* ── VISTA HISTORIAL ── */
+    .historial-view {
+      display: none;
+      flex-direction: column;
+      max-width: 520px;
+      width: 100%;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+      padding-bottom: 1rem;
+    }
+
+    .historial-view.visible { display: flex; }
+
+    .historial-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .historial-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: #4a2080;
+      flex: 1;
+    }
+
+    .historial-header h2 em {
+      font-style: italic;
+      color: #7c4dbd;
+    }
+
+    .btn-back {
+      background: rgba(255,255,255,0.7);
+      color: #6b3fa0;
+      border: 1.5px solid #b49de0;
+      border-radius: 50px;
+      padding: 9px 20px;
+      font-size: 0.85rem;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-back:hover { background: rgba(255,255,255,0.95); }
+
+    .historial-loading {
+      text-align: center;
+      color: #7a5aa0;
+      font-style: italic;
+      padding: 2rem;
+    }
+
+    .msg-entry {
+      background: rgba(255,255,255,0.88);
+      border: 1px solid #c4aff0;
+      border-radius: 16px;
+      padding: 1.2rem 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .msg-entry-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .msg-entry-date {
+      font-size: 11px;
+      color: #7a5aa0;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    .msg-entry-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #8b5cf6;
+      flex-shrink: 0;
+    }
+
+    /* Punto especial para hoy */
+    .msg-entry.hoy .msg-entry-dot {
+      background: #6d28d9;
+      box-shadow: 0 0 6px rgba(109,40,217,0.5);
+    }
+
+    .msg-entry.hoy {
+      border-color: #8b5cf6;
+      border-width: 1.5px;
+    }
+
+    .hoy-badge {
+      font-size: 10px;
+      background: #8b5cf6;
+      color: white;
+      border-radius: 20px;
+      padding: 2px 10px;
+      letter-spacing: 1px;
+    }
+
+    .msg-entry-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: #3a1a60;
+      font-style: italic;
+      line-height: 1.75;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
@@ -127,13 +268,12 @@
   <div class="petal" style="width:180px;height:180px;background:#b49de0;bottom:-50px;right:-40px;transform:rotate(-20deg)"></div>
   <div class="petal" style="width:110px;height:110px;background:#c4aff0;bottom:80px;left:30px;transform:rotate(15deg)"></div>
 
-  <div class="container">
+  <!-- VISTA PRINCIPAL -->
+  <div class="container" id="vistaMain">
     <div class="badge">✦ Felices 2 meses ✦</div>
-
     <h1>Para ti, <em>vida mía</em> 💜🪻💜</h1>
-
     <p class="subtitle">
-      Agradezco cada dia, cada hora, cada minuto, y cada segundo en el que estoy contigo.<br/>
+      Agradezco cada día, cada hora, cada minuto, y cada segundo en el que estoy contigo.<br/>
       Aquí hay un mensajito solo para hoy...
     </p>
 
@@ -146,11 +286,69 @@
       <div class="card-msg" id="msg">Cargando...</div>
       <div class="hearts">♥ ♥ ♥</div>
     </div>
+
+    <button class="btn-secondary" onclick="abrirHistorial()">
+      📖 Ver mensajes anteriores
+    </button>
+  </div>
+
+  <!-- VISTA HISTORIAL -->
+  <div class="historial-view" id="vistaHistorial">
+    <div class="historial-header">
+      <button class="btn-back" onclick="cerrarHistorial()">← Volver</button>
+      <h2>Nuestro <em>diario</em> 💜</h2>
+    </div>
+
+    <div id="historialContenido">
+      <div class="historial-loading">Cargando mensajes...</div>
+    </div>
   </div>
 
   <script>
+    // 🌸 REEMPLAZA con tu URL del Google Sheet
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQcPZW7aAlZB7wGCgDcM2bFUJ6_pVluPGEUro_N4DebEa5h2GWibIkVY5AW0WSlmZkfshHdI1SDo3sR/pub?gid=0&single=true&output=csv';
 
+    // Fecha desde la que empiezan los mensajes
+    const FECHA_INICIO = new Date(2026, 3, 14); // 14 de abril de 2026 (mes 0-indexado)
+
+    let mensajesCargados = [];
+
+    // ── Utilidades ──
+    function getSeed(fecha) {
+      return fecha.getFullYear() * 10000 + (fecha.getMonth() + 1) * 100 + fecha.getDate();
+    }
+
+    function getMensajeDelDia(fecha, mensajes) {
+      const seed = getSeed(fecha);
+      return mensajes[seed % mensajes.length];
+    }
+
+    function formatFecha(fecha) {
+      return fecha.toLocaleDateString('es-CO', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      });
+    }
+
+    function esMismodia(a, b) {
+      return a.getFullYear() === b.getFullYear() &&
+             a.getMonth() === b.getMonth() &&
+             a.getDate() === b.getDate();
+    }
+
+    // ── Cargar mensajes desde el Sheet ──
+    async function cargarMensajes() {
+      if (mensajesCargados.length > 0) return mensajesCargados;
+      const proxy = 'https://corsproxy.io/?' + encodeURIComponent(SHEET_URL);
+      const res = await fetch(proxy);
+      const text = await res.text();
+      mensajesCargados = text
+        .split('\n')
+        .map(l => l.trim().replace(/^"|"$/g, ''))
+        .filter(l => l.length > 0);
+      return mensajesCargados;
+    }
+
+    // ── Vista principal: mensaje del día ──
     async function mostrarMensaje() {
       const btn = document.getElementById('btn');
       const card = document.getElementById('card');
@@ -163,31 +361,72 @@
       msgEl.textContent = 'Un momento...';
 
       try {
-        const proxy = 'https://corsproxy.io/?' + encodeURIComponent(SHEET_URL);
-        const res = await fetch(proxy);
-        const text = await res.text();
-
-        const mensajes = text
-          .split('\n')
-          .map(l => l.trim().replace(/^"|"$/g, ''))
-          .filter(l => l.length > 0);
-
+        const mensajes = await cargarMensajes();
         if (mensajes.length === 0) throw new Error('Sin mensajes');
 
         const hoy = new Date();
-        const seed = hoy.getFullYear() * 10000 + (hoy.getMonth() + 1) * 100 + hoy.getDate();
-        const indice = seed % mensajes.length;
-
-        const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        fechaEl.textContent = hoy.toLocaleDateString('es-CO', opciones);
-        msgEl.textContent = mensajes[indice];
-
+        fechaEl.textContent = formatFecha(hoy);
+        msgEl.textContent = getMensajeDelDia(hoy, mensajes);
       } catch (e) {
         msgEl.textContent = 'No pude cargar el mensaje, intenta más tarde 💜';
       }
 
       btn.innerHTML = '<span>♡</span> Ver mi mensaje del día';
       btn.disabled = false;
+    }
+
+    // ── Vista historial ──
+    async function abrirHistorial() {
+      document.getElementById('vistaMain').style.display = 'none';
+      document.getElementById('vistaHistorial').classList.add('visible');
+
+      const contenedor = document.getElementById('historialContenido');
+      contenedor.innerHTML = '<div class="historial-loading">Cargando mensajes... 💜</div>';
+
+      try {
+        const mensajes = await cargarMensajes();
+        if (mensajes.length === 0) throw new Error('Sin mensajes');
+
+        const hoy = new Date();
+        const entries = [];
+
+        // Iterar desde hoy hacia atrás hasta FECHA_INICIO
+        for (let d = new Date(hoy); d >= FECHA_INICIO; d.setDate(d.getDate() - 1)) {
+          const copia = new Date(d);
+          entries.push(copia);
+        }
+
+        contenedor.innerHTML = '';
+
+        entries.forEach(fecha => {
+          const esHoy = esMismodia(fecha, hoy);
+          const mensaje = getMensajeDelDia(fecha, mensajes);
+
+          const div = document.createElement('div');
+          div.className = 'msg-entry' + (esHoy ? ' hoy' : '');
+
+          div.innerHTML = `
+            <div class="msg-entry-header">
+              <span class="msg-entry-date">${formatFecha(fecha)}</span>
+              <div style="display:flex;align-items:center;gap:6px">
+                ${esHoy ? '<span class="hoy-badge">HOY</span>' : ''}
+                <div class="msg-entry-dot"></div>
+              </div>
+            </div>
+            <div class="msg-entry-text">${mensaje}</div>
+          `;
+
+          contenedor.appendChild(div);
+        });
+
+      } catch (e) {
+        contenedor.innerHTML = '<div class="historial-loading">No se pudieron cargar los mensajes 💜</div>';
+      }
+    }
+
+    function cerrarHistorial() {
+      document.getElementById('vistaHistorial').classList.remove('visible');
+      document.getElementById('vistaMain').style.display = 'flex';
     }
   </script>
 
